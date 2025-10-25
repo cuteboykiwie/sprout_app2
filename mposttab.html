@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Post - Sprout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+        }
+
+        .tab {
+            padding: 18px 30px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            font-size: 16px;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid white;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid white;
+            font-weight: bold;
+        }
+
+        .tab.plus-tab {
+            background: white;
+            color: #667eea;
+            font-size: 24px;
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tab.plus-tab:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid transparent;
+        }
+
+        .tab.plus-tab.active {
+            background: white;
+            color: #667eea;
+            border-left: 4px solid transparent;
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            background: #f5f5f5;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content h1 {
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            min-width: 200px;
+        }
+
+        .action-button:hover {
+            opacity: 0.9;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        #video {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        #photo {
+            max-width: 500px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .photo-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .dropdown-container {
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .dropdown-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .dropdown {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dropdown:hover {
+            border-color: #764ba2;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .dropdown:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Sprout</h2>
+        <a href="mposttab.html" class="tab plus-tab active">➕</a>
+        <a href="profiletab.html" class="tab">👤 Profile</a>
+        <a href="hometab.html" class="tab">🏠 Home</a>
+        <a href="communitytab.html" class="tab">👥 Community</a>
+        <a href="newstab.html" class="tab">📰 Local News</a>
+    </div>
+
+    <div class="content">
+        <h1>📸 Create a Post</h1>
+        
+        <!-- Dropdown Menu -->
+        <div class="dropdown-container">
+            <label class="dropdown-label" for="postDestination">Post to:</label>
+            <select id="postDestination" class="dropdown">
+                <option value="community">👥 Community</option>
+                <option value="profile">👤 Profile</option>
+                <option value="news">📰 Local News</option>
+            </select>
+        </div>
+        
+        <div id="initialButtons" class="button-container">
+            <!-- Camera button -->
+            <input type="file" id="cameraInput" class="file-input" accept="image/*" capture="environment" onchange="handlePhoto(event)">
+            <button class="action-button" onclick="document.getElementById('cameraInput').click()">
+                📷 Open Camera
+            </button>
+            
+            <!-- Upload from album button -->
+            <input type="file" id="uploadInput" class="file-input" accept="image/*" onchange="handlePhoto(event)">
+            <button class="action-button" onclick="document.getElementById('uploadInput').click()">
+                🖼️ Upload from Album
+            </button>
+        </div>
+
+        <!-- Video stream (for devices that support getUserMedia) -->
+        <video id="video" autoplay playsinline></video>
+        
+        <!-- Capture button (shown when video is active) -->
+        <button id="captureBtn" class="action-button hidden" onclick="capturePhoto()">Capture Photo</button>
+        
+        <!-- Canvas for capturing photo -->
+        <canvas id="canvas"></canvas>
+        
+        <!-- Display captured/uploaded photo -->
+        <img id="photo" alt="Selected photo">
+        
+        <!-- Post button (shown after photo is selected) -->
+        <button id="postBtn" class="action-button hidden" onclick="postPhoto()" style="margin-top: 20px;">Post Photo</button>
+    </div>
+
+    <script>
+        let stream = null;
+        let currentPhotoData = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const photo = document.getElementById('photo');
+        const captureBtn = document.getElementById('captureBtn');
+        const initialButtons = document.getElementById('initialButtons');
+        const postBtn = document.getElementById('postBtn');
+
+        // Handle photo from file input (camera or album)
+        function handlePhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentPhotoData = e.target.result;
+                    photo.src = currentPhotoData;
+                    photo.style.display = 'block';
+                    initialButtons.style.display = 'none';
+                    postBtn.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Post photo to selected destination
+        function postPhoto() {
+            if (!currentPhotoData) {
+                alert('Please select a photo first!');
+                return;
+            }
+
+            const destination = document.getElementById('postDestination').value;
+            
+            // Get existing posts for the destination
+            let posts = JSON.parse(localStorage.getItem(destination + 'Posts')) || [];
+            
+            // Add new post with timestamp
+            const newPost = {
+                image: currentPhotoData,
+                timestamp: new Date().toISOString(),
+                id: Date.now()
+            };
+            
+            posts.unshift(newPost); // Add to beginning of array
+            
+            // Save to localStorage
+            localStorage.setItem(destination + 'Posts', JSON.stringify(posts));
+            
+            // Redirect to the selected page
+            let redirectPage = '';
+            switch(destination) {
+                case 'community':
+                    redirectPage = 'communitytab.html';
+                    break;
+                case 'profile':
+                    redirectPage = 'profiletab.html';
+                    break;
+                case 'news':
+                    redirectPage = 'newstab.html';
+                    break;
+            }
+            
+            alert('Photo posted successfully!');
+            window.location.href = redirectPage;
+        }
+    </script>
+</body>
+</html>
